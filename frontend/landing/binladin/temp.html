@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cogni:wave - Mental Health Professionals</title>
+<!-- Tailwind CSS v3 with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter for a clean sans-serif look -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            cogni: {
+              text: '#1A1A1A',
+              subtext: '#666666',
+              purple: '#7A5AF8', // Logo purple
+              light: '#F8F9FC', // Background
+            }
+          },
+          boxShadow: {
+            'soft': '0 20px 40px -10px rgba(0, 0, 0, 0.05)',
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Styles -->
+<link href="styles.css" rel="stylesheet"/>
+</head>
+<body class="min-h-screen flex flex-col font-sans antialiased selection:bg-purple-200 selection:text-purple-900 bg-slate-50">
+<!-- BEGIN: Header -->
+<header class="w-full py-6">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+<!-- Logo Section -->
+<div class="flex-shrink-0 flex items-center gap-1 cursor-pointer" data-purpose="logo">
+<span class="text-2xl font-bold text-[#8B5CF6] tracking-tight">cogni:wave</span>
+</div>
+<!-- Navigation Links (Hidden on small mobile) -->
+<nav aria-label="Main Navigation" class="hidden md:flex items-center space-x-8">
+<a class="text-sm font-medium text-gray-600 hover:text-[#7A5AF8] transition-colors" href="#">Services</a>
+<a class="text-sm font-medium text-gray-600 hover:text-[#7A5AF8] transition-colors" href="#">Treatment</a>
+<a class="text-sm font-medium text-gray-600 hover:text-[#7A5AF8] transition-colors" href="#">Blog</a>
+<a class="text-sm font-medium text-gray-600 hover:text-[#7A5AF8] transition-colors" href="#">About us</a>
+</nav>
+<!-- Right Actions: Moon Icon & Contact Button -->
+<div class="flex items-center gap-6">
+<!-- Moon Icon -->
+<button aria-label="Toggle Dark Mode" class="text-gray-900 hover:text-[#7A5AF8] transition-colors">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Contact Button -->
+<a class="hidden sm:inline-block px-6 py-2.5 text-sm font-medium text-gray-900 border border-gray-200 rounded-full hover:border-gray-400 hover:bg-white transition-all bg-white" href="#">
+          Contact us
+        </a>
+</div>
+</div>
+</header>
+<!-- END: Header -->
+<!-- BEGIN: Main Content (Hero Section) -->
+<main class="flex-grow flex items-center justify-center relative w-full overflow-hidden">
+<!-- Background Video on Left Side -->
+<div class="absolute left-0 top-0 bottom-0 w-1/2 hidden lg:block opacity-20">
+<video autoplay="" class="w-full h-full object-cover" loop="" muted="" playsinline="">
+<source src="../../images/landing_video.mp4" type="video/mp4"/>
+</video>
+</div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-12 md:py-20 relative z-10">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+<!-- Left Column: Headline -->
+<section class="max-w-2xl" data-purpose="hero-text">
+<h1 class="text-6xl md:text-7xl font-bold text-[#1A1A1A] tracking-tight mb-8 leading-tight">
+            Embark on your mental journey with professionals
+          </h1>
+<!-- Decorative element or subtext could go here if needed, keeping it clean as per mockup -->
+</section>
+<!-- Right Column: Floating Card -->
+<section class="relative flex flex-col items-end lg:items-end justify-center" data-purpose="hero-card-container">
+<!-- Floating Badge -->
+<!-- Positioned absolutely or relatively to align with top right of the visual block -->
+<div class="mb-4 w-full flex justify-end">
+<span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 text-blue-600 text-xs font-semibold shadow-sm">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+</span>
+              Ready to help
+            </span>
+</div>
+<!-- The Main White Card -->
+<div class="bg-white rounded-3xl p-10 shadow-[0_20px_50px_rgba(0,0,0,0.1)] w-full max-w-[400px]">
+<!-- Avatars Row -->
+<!-- Using placeholders as requested -->
+<img alt="Professionals" class="w-[150px] mb-6 object-contain self-start mix-blend-multiply" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB83R6H96juhtLWr6Jzsn9aUqQbEiPhAcglOY8tI3bKSLQAY0RoWVr2ccfquEpCKSaKQEh1s5_gR6j84AKM6KFRTvyzBCi7JMakCAfVWo25xYRbPOWCUHZRSq8Sp-MImgTYaiWP5y2vwXgbxk5-JWeQLRHPlroG2vYky7ChB-TUfVUW71x128_yhegJyL24_nRYemdEE8CkctBBNQhLZo8xzThZAzmae6eC-43JEaR7D9inLVMJMSbT7C0eFl3tnoWvp5joVqETz9I"/>
+<!-- Card Text -->
+<div class="mb-8 space-y-2">
+<p class="text-gray-600 text-lg leading-relaxed">
+                Welcome to mental mind, your gateway to improved mental me. We're here to help you sculpt a stronger, more resilient mind.
+              </p>
+</div>
+<!-- CTA Button -->
+<button class="w-full bg-gradient-to-r from-[#A78BFA] to-[#7C3AED] text-white font-bold text-lg py-4 px-6 rounded-full shadow-lg shadow-purple-200 flex items-center justify-center group hover:opacity-90 transition-all">
+              Start Cure
+              <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Secondary Link: Watch Review -->
+<div class="mt-8 flex justify-center">
+<button class="flex items-center gap-3 text-gray-500 hover:text-gray-900 transition-colors group">
+<div class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center group-hover:border-gray-900 transition-colors">
+<svg class="w-4 h-4 ml-0.5" fill="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<span class="text-sm font-medium">Watch review</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- END: Main Content -->
+<!-- BEGIN: Footer -->
+<footer class="w-full py-8 border-t border-transparent md:border-none">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400">
+<!-- Copyright -->
+<div class="order-2 md:order-1">
+        © 2024 Cogni:wave. All rights reserved.
+      </div>
+<!-- Footer Links -->
+<div class="flex gap-6 order-1 md:order-2">
+<a class="hover:text-gray-600 transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-gray-600 transition-colors" href="#">Terms of Use</a>
+<a class="hover:text-gray-600 transition-colors" href="#">Accessibility</a>
+</div>
+</div>
+</footer>
+<!-- END: Footer -->
+</body></html>

@@ -1,0 +1,22 @@
+/* Custom Styles for Cogni:wave Landing Page */
+
+body {
+  /* background-color removed to use bg-slate-50 class */
+  color: #1A1A1A;
+}
+
+/* Smooth gradient for the primary button */
+.btn-gradient {
+  background: linear-gradient(90deg, #A78BFA 0%, #8A70D6 100%);
+  transition: opacity 0.3s ease, transform 0.2s ease;
+}
+
+.btn-gradient:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Avatar overlap styling */
+.avatar-ring {
+  box-shadow: 0 0 0 3px #ffffff;
+}
