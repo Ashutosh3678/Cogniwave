@@ -6,9 +6,14 @@ import FeaturesSection from './components/FeaturesSection'
 import Testimonials from './components/Testimonials'
 import Footer from './components/Footer'
 import UserDashboard from './pages/UserDashboard'
+import StoreOwnerDashboard from './pages/StoreOwnerDashboard'
+import SynapseLanding from './pages/LandingPage'
+import Home from './pages/Home'
+import Login from './pages/login'
+import StoreCreate from './pages/StoreCreate'
 import './App.css'
 
-function LandingPage() {
+function CogniWaveLanding() {
   return (
     <>
       <Header />
@@ -25,8 +30,13 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<CogniWaveLanding />} />
+        <Route path="/synapstore" element={<SynapseLanding />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/store/create" element={<StoreCreate />} />
         <Route path="/dashboard" element={<UserDashboard />} />
+        <Route path="/store/dashboard" element={<StoreOwnerDashboard />} />
       </Routes>
     </Router>
   )

@@ -1,14 +1,10 @@
 
 
 import React from "react";
-import { useRecoilState } from "recoil";
-import { authState } from "../state/auth";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bell, Settings, LogOut, Users, Package, Search, X, Sparkles, Lock, Truck, Check, FileText, ChevronDown, ChevronUp, Activity, ShoppingCart, Link, Store, XCircle, Send, History as HistoryIcon, ClipboardList, Mail, Phone, Trash2, ArrowRight, CreditCard, Banknote, Smartphone, Loader2, Clock, AlertTriangle, BarChart2 } from "lucide-react";
 import { Dock, DockIcon, DockItem, DockLabel } from "../components/ui/dock";
 import { formatDistanceToNow } from "date-fns";
-import { useLogout } from "../hooks/useLogout";
-import { dashboardApi } from "../lib/api/endpoints";
 import { Button } from "../components/ui/button-1";
 import PharmacyPayment from "../components/payments/PharmacyPayment";
 
@@ -235,12 +231,49 @@ const EmptyState = ({
 };
 
 const StoreOwnerDashboard: React.FC = () => {
-    const [auth, setAuth] = useRecoilState(authState);
-    const logout = useLogout();
+    // Mock data for demo mode
+    const mockData: DashboardData = {
+        user: { username: "Demo User", globalRole: "STORE_OWNER" },
+        store: { id: "demo-store", name: "Demo Pharmacy" },
+        overview: {
+            totalMedicines: 150,
+            totalBatches: 320,
+            recentSalesCount: 45,
+            recentRevenue: 125000,
+            unreadNotifications: 3,
+            inventoryTotals: { qtyAvailable: 5000 }
+        },
+        charts: {
+            salesByDay: [
+                { date: "2026-01-16", revenue: 15000, count: 8 },
+                { date: "2026-01-17", revenue: 18000, count: 10 },
+                { date: "2026-01-18", revenue: 12000, count: 6 },
+                { date: "2026-01-19", revenue: 22000, count: 12 },
+                { date: "2026-01-20", revenue: 19000, count: 9 },
+                { date: "2026-01-21", revenue: 24000, count: 14 },
+                { date: "2026-01-22", revenue: 21000, count: 11 }
+            ],
+            topMovers: [
+                { medicineId: "1", medicine: { brandName: "Paracetamol 500mg" }, qtySold: 120 },
+                { medicineId: "2", medicine: { brandName: "Amoxicillin 250mg" }, qtySold: 85 },
+                { medicineId: "3", medicine: { brandName: "Ibuprofen 400mg" }, qtySold: 65 }
+            ]
+        },
+        lists: {
+            lowStock: [],
+            recentSales: [],
+            activity: [
+                { id: "1", action: "Sale completed for ₹2,500", createdAt: new Date().toISOString() },
+                { id: "2", action: "New stock added - Paracetamol", createdAt: new Date(Date.now() - 3600000).toISOString() },
+                { id: "3", action: "Supplier request accepted", createdAt: new Date(Date.now() - 7200000).toISOString() }
+            ],
+            suppliers: []
+        }
+    };
 
     const [activeTab, setActiveTab] = React.useState<"overview" | "reorder" | "sale" | "history" | "suppliers" | "sent_reorders" | "return">("overview");
-    const [data, setData] = React.useState<DashboardData | null>(null);
-    const [loading, setLoading] = React.useState(true);
+    const [data, setData] = React.useState<DashboardData | null>(mockData);
+    const [loading, setLoading] = React.useState(false);
     const [supplierRequests, setSupplierRequests] = React.useState<SupplierRequest[]>([]);
     const [myRequests, setMyRequests] = React.useState<SupplierRequest[]>([]);
     const [receipts, setReceipts] = React.useState<any[]>([]);
@@ -286,17 +319,18 @@ const StoreOwnerDashboard: React.FC = () => {
     };
 
     React.useEffect(() => {
-        if (activeTab === 'reorder' && inventoryList.length === 0) {
-            handleOpenReorder();
-            // Clear cart when switching filters to avoid mixing types
-            setCart(new Map());
-            setCartMode(inventoryFilter === 'expired' ? 'return' : 'reorder');
-            setReorderNote("");
-        } else if (activeTab === 'return' && returnList.length === 0) {
-            handleOpenReturn();
-            setReturnCart(new Map());
-            setReturnNote("");
-        }
+        // Disabled for demo mode
+        // if (activeTab === 'reorder' && inventoryList.length === 0) {
+        //     handleOpenReorder();
+        //     // Clear cart when switching filters to avoid mixing types
+        //     setCart(new Map());
+        //     setCartMode(inventoryFilter === 'expired' ? 'return' : 'reorder');
+        //     setReorderNote("");
+        // } else if (activeTab === 'return' && returnList.length === 0) {
+        //     handleOpenReturn();
+        //     setReturnCart(new Map());
+        //     setReturnNote("");
+        // }
     }, [inventoryFilter, activeTab, inventoryList.length]);
 
     const [isReorderLoading, setIsReorderLoading] = React.useState(false);
@@ -670,11 +704,11 @@ const StoreOwnerDashboard: React.FC = () => {
             return;
         }
 
-        const storeId = auth.effectiveStore?.id || data?.store?.id;
+        const storeId = data?.store?.id;
         console.log("Using Store ID:", storeId);
 
         if (!storeId) {
-            console.error("Store ID missing", { authStore: auth.effectiveStore, dataStore: data?.store });
+            console.error("Store ID missing", { dataStore: data?.store });
             setForecastError("Store ID missing. Please refresh the page.");
             return;
         }
@@ -1038,6 +1072,9 @@ const StoreOwnerDashboard: React.FC = () => {
     }, []);
 
     const fetchData = React.useCallback(async () => {
+        // Disabled for demo mode
+        return;
+        /*
         try {
             const [storeRes, bootstrapRes, requestsRes] = await Promise.all([
                 dashboardApi.getStore(),
@@ -1054,8 +1091,8 @@ const StoreOwnerDashboard: React.FC = () => {
                 let newAuth: any = { ...auth };
 
                 // 1. Check Role
-                if (auth.user && fetchedUser.globalRole !== auth.user.globalRole) {
-                    newAuth.user = { ...newAuth.user, globalRole: fetchedUser.globalRole };
+                if (data?.user && fetchedUser.globalRole !== data?.user.globalRole) {
+                    newdata?.user = { ...newdata?.user, globalRole: fetchedUser.globalRole };
                     shouldUpdate = true;
 
                     if (fetchedUser.globalRole === "SUPPLIER") {
@@ -1066,8 +1103,8 @@ const StoreOwnerDashboard: React.FC = () => {
                 }
 
                 // 2. Check Store (Fix for missing store name on first login)
-                if (fetchedStore && (!auth.effectiveStore || auth.effectiveStore.id !== fetchedStore.id || auth.effectiveStore.name !== fetchedStore.name)) {
-                    newAuth.effectiveStore = fetchedStore;
+                if (fetchedStore && (!data?.store || data?.store.id !== fetchedStore.id || data?.store.name !== fetchedStore.name)) {
+                    newdata?.store = fetchedStore;
                     shouldUpdate = true;
                 }
 
@@ -1084,21 +1121,21 @@ const StoreOwnerDashboard: React.FC = () => {
                 // Filter notifications: Only show INBOUND requests (Requests created by the Supplier, i.e., NOT by me)
                 // Actually, more accurately: Requests where createdById is NOT the current user
                 // Or better: Requests where the direction is Incoming.
-                // Since we don't have strict direction field in SupplierRequest type here, rely on createdById vs auth.user.id
+                // Since we don't have strict direction field in SupplierRequest type here, rely on createdById vs data?.user.id
                 // But wait, if Self-Connect, createdById matches user (who is both Store Owner and Supplier).
                 // If I am Store Owner, and I see a request I created, it's Outbound (except for Self-Connect where backend says Inbound?).
                 // Backend logic: If CreatedBy == Supplier.userId -> Inbound.
                 // Here we just want to avoid showing "You sent a request" as a notification to yourself.
                 // So filter: remove requests created by ME.
                 // UNLESS it's a self-request that is treated as Inbound?
-                // Let's stick to: If createdById != auth.user?.id, show notification.
+                // Let's stick to: If createdById != data?.user?.id, show notification.
                 // If I sent it, I don't need a notification.
                 const allRequests = requestsRes.data.data;
-                const inbound = allRequests.filter((r: SupplierRequest) => r.createdById !== auth.user?.id && r.status === 'PENDING');
+                const inbound = allRequests.filter((r: SupplierRequest) => r.createdById !== data?.user?.id && r.status === 'PENDING');
                 setSupplierRequests(inbound);
 
                 // Also track my sent requests/reorders
-                const outbound = allRequests.filter((r: SupplierRequest) => r.createdById === auth.user?.id);
+                const outbound = allRequests.filter((r: SupplierRequest) => r.createdById === data?.user?.id);
                 setMyRequests(outbound);
             }
         } catch (err) {
@@ -1106,51 +1143,40 @@ const StoreOwnerDashboard: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [auth.user, setAuth]);
+        */
+    }, []);
 
+    // React.useEffect(() => {
+    //     if (auth.token && !data) {
+    //         fetchData();
+    //     }
+    // }, [auth.token, data, fetchData]);
+
+    // Auto-load data without auth check
     React.useEffect(() => {
-        if (auth.token && !data) {
-            fetchData();
+        if (!data) {
+            setLoading(false); // Skip loading since we're in demo mode
         }
-    }, [auth.token, data, fetchData]);
+    }, [data]);
 
     const refreshData = async () => {
         setIsRefreshing(true);
-
-        // Refresh only the active section
-        switch (activeTab) {
-            case 'reorder':
-                await handleOpenReorder();
-                break;
-            case 'sale':
-                await searchPOSMedicines("");
-                break;
-            case 'history':
-                await handleViewReceipts();
-                break;
-            case 'overview':
-            case 'suppliers':
-            case 'sent_reorders':
-            default:
-                await fetchData();
-                break;
-        }
-
-        setTimeout(() => setIsRefreshing(false), 500); // Min delay for visual feedback
+        // Demo mode - skip API calls
+        setTimeout(() => setIsRefreshing(false), 500);
     };
 
-    // Effect to handle tab-specific data fetching
-    React.useEffect(() => {
-        if (activeTab === 'reorder' && inventoryList.length === 0) {
-            handleOpenReorder();
-        } else if (activeTab === 'sale' && posResults.length === 0) {
-            searchPOSMedicines("");
-        } else if (activeTab === 'history' && receipts.length === 0) {
-            handleViewReceipts();
-        } else if ((activeTab === 'overview' || activeTab === 'return') && returnList.length === 0) {
-            handleOpenReturn();
-        }
-    }, [activeTab, inventoryList.length, posResults.length, receipts.length, returnList.length]);
+    // Effect to handle tab-specific data fetching - Disabled for demo mode
+    // React.useEffect(() => {
+    //     if (activeTab === 'reorder' && inventoryList.length === 0) {
+    //         handleOpenReorder();
+    //     } else if (activeTab === 'sale' && posResults.length === 0) {
+    //         searchPOSMedicines("");
+    //     } else if (activeTab === 'history' && receipts.length === 0) {
+    //         handleViewReceipts();
+    //     } else if ((activeTab === 'overview' || activeTab === 'return') && returnList.length === 0) {
+    //         handleOpenReturn();
+    //     }
+    // }, [activeTab, inventoryList.length, posResults.length, receipts.length, returnList.length]);
 
 
     // Directory State
@@ -1174,7 +1200,7 @@ const StoreOwnerDashboard: React.FC = () => {
     }, []);
 
     React.useEffect(() => {
-        if (activeTab === 'suppliers') {
+        if (false && activeTab === 'suppliers') { // Disabled for demo
             const timer = setTimeout(() => {
                 fetchSuppliersDirectory(searchQuery);
             }, 300);
@@ -1183,7 +1209,8 @@ const StoreOwnerDashboard: React.FC = () => {
     }, [activeTab, searchQuery, fetchSuppliersDirectory]);
 
     const handleLogout = () => {
-        setShowLogoutConfirm(true);
+        // Logout disabled in demo mode
+        console.log('Logout clicked - disabled in demo mode');
     };
 
     const handleAcceptRequest = async (requestId: string) => {
@@ -1327,7 +1354,7 @@ const StoreOwnerDashboard: React.FC = () => {
         }
     };
 
-    if (loading) {
+    if (false && loading) { // Disabled loading check for demo
         return (
             <div className="min-h-screen bg-slate-50/50">
                 {/* Header Skeleton */}
@@ -1464,11 +1491,11 @@ const StoreOwnerDashboard: React.FC = () => {
                         </div>
                         <div className="flex flex-col">
                             <h1 className="font-bold text-lg text-slate-800 tracking-tight leading-none">
-                                {auth.effectiveStore?.name}
+                                {data?.store?.name || data?.store?.name || "Demo Pharmacy"}
                             </h1>
                             <div className="flex items-center gap-2 mt-1">
                                 <span className={`text-[10px] font-bold uppercase tracking-wider ${theme.text} opacity-80`}>
-                                    {auth.user?.globalRole} Dashboard
+                                    {data?.user?.globalRole || data?.user?.globalRole || "STORE_OWNER"} Dashboard
                                 </span>
                             </div>
                         </div>
@@ -1581,10 +1608,10 @@ const StoreOwnerDashboard: React.FC = () => {
                             {/* User Info */}
                             <div className="hidden sm:flex flex-col items-end leading-tight mr-1">
                                 <span className="text-sm font-bold text-slate-800">
-                                    {capitalize(auth.user?.username)}
+                                    {capitalize(data?.user?.username)}
                                 </span>
                                 <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
-                                    {auth.user?.globalRole?.toLowerCase().replace('_', ' ')}
+                                    {data?.user?.globalRole?.toLowerCase().replace('_', ' ')}
                                 </span>
                             </div>
 
@@ -1593,17 +1620,17 @@ const StoreOwnerDashboard: React.FC = () => {
                                 <div className="flex items-center justify-center w-11 h-11 rounded-full 
                       bg-white text-slate-700 
                       font-bold shadow-md border-[2px] border-white ring-1 ring-slate-100 overflow-hidden transition-transform group-hover:scale-105">
-                                    {auth.user?.imageUrl && !imgError ? (
+                                    {data?.user?.imageUrl && !imgError ? (
                                         <img
-                                            key={auth.user.imageUrl}
-                                            src={auth.user.imageUrl}
+                                            key={data?.user.imageUrl}
+                                            src={data?.user.imageUrl}
                                             alt="Profile"
                                             className="w-full h-full object-cover"
                                             onError={() => setImgError(true)}
                                         />
                                     ) : (
                                         <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-slate-600">
-                                            {auth.user?.username?.charAt(0)?.toUpperCase()}
+                                            {data?.user?.username?.charAt(0)?.toUpperCase()}
                                         </div>
                                     )}
                                 </div>
@@ -1638,7 +1665,7 @@ const StoreOwnerDashboard: React.FC = () => {
                     >
                         <div>
                             <h2 className="text-3xl font-bold text-slate-800">
-                                {getGreeting()}, <span className={`bg-gradient-to-r ${theme.gradient} bg-clip-text text-transparent`}>{capitalize(auth.user?.username.split(' ')[0])}</span>
+                                {getGreeting()}, <span className={`bg-gradient-to-r ${theme.gradient} bg-clip-text text-transparent`}>{capitalize((data?.user?.username || data?.user?.username || "User").split(' ')[0])}</span>
                             </h2>
                             <p className="text-slate-500 mt-1">Here's what's happening in your store today.</p>
                         </div>
