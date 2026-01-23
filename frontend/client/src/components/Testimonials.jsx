@@ -51,7 +51,9 @@ const Testimonials = () => {
     <section className="reviews-section" id="testimonials">
       <div className="reviews-container">
         <div className="reviews-header">
-          <h2 className="reviews-title">Trusted by Mental Health Professionals</h2>
+          <h2 className="reviews-title">
+            Trusted by <span className="reviews-highlight">Mental Health Professionals</span>
+          </h2>
           <p className="reviews-subtitle">Join thousands of professionals that have transformed their practice with Cogni:wave</p>
         </div>
         <div className="relative">
