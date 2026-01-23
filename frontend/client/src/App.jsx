@@ -8,9 +8,9 @@ import Footer from './components/Footer'
 import UserDashboard from './pages/UserDashboard'
 import StoreOwnerDashboard from './pages/StoreOwnerDashboard'
 import SynapseLanding from './pages/LandingPage'
-import Home from './pages/Home'
 import Login from './pages/login'
 import StoreCreate from './pages/StoreCreate'
+import DashboardRedirect from './pages/DashboardRedirect'
 import './App.css'
 
 function CogniWaveLanding() {
@@ -32,7 +32,7 @@ function App() {
       <Routes>
         <Route path="/" element={<CogniWaveLanding />} />
         <Route path="/synapstore" element={<SynapseLanding />} />
-        <Route path="/home" element={<Home />} />
+        <Route path="/home" element={<DashboardRedirect />} />
         <Route path="/login" element={<Login />} />
         <Route path="/store/create" element={<StoreCreate />} />
         <Route path="/dashboard" element={<UserDashboard />} />

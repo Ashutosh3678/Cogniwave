@@ -1,0 +1,55 @@
+# Model files (too large for GitHub)
+server/backend/model_files/
+server/Phycological_model/
+*.pt
+*.pth
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+server/backend/venv/
+server/backend/env/
+
+# Database
+server/backend/cogniwave.db
+server/backend/*.db
+
+# PDF reports
+server/backend/reports/
+*.pdf
+
+# Node
+node_modules/
+frontend/client/node_modules/
+frontend/landing/node_modules/
+
+# Build outputs
+frontend/client/dist/
+frontend/client/build/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env files
+.env
+server/backend/.env

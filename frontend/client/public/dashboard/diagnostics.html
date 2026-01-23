@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnostics - CogniWave</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="dashboard.css" rel="stylesheet"/>
+    <script src="tailwind-config.js"></script>
+    <!-- Centralized Navigation -->
+    <script src="navbar.js"></script>
+</head>
+<body class="bg-bg text-gray-800 font-sans min-h-screen p-6 pt-28">
+
+    <!-- Navigation Container -->
+    <div id="navbar-container"></div>
+
+    <main class="max-w-7xl mx-auto">
+        <div class="mb-8">
+            <h2 class="text-4xl font-bold text-gray-900 mb-2">AI Diagnostics</h2>
+            <p class="text-gray-500 text-lg">Multimodal patient analysis using ECG, camera, and microphone</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Column: Input Controls -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Vital Signs Card -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-heartbeat text-primary mr-2"></i>
+                        Vital Signs
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700 mb-1 block">Heart Rate (BPM)</label>
+                            <input type="number" id="heartRate" value="75" min="40" max="200"
+                                   class="w-full bg-gray-100 rounded-lg px-4 py-2 text-sm border-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700 mb-1 block">Blood Pressure (Systolic)</label>
+                            <input type="number" id="bpSystolic" value="120" min="80" max="200"
+                                   class="w-full bg-gray-100 rounded-lg px-4 py-2 text-sm border-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700 mb-1 block">Blood Pressure (Diastolic)</label>
+                            <input type="number" id="bpDiastolic" value="80" min="50" max="120"
+                                   class="w-full bg-gray-100 rounded-lg px-4 py-2 text-sm border-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700 mb-1 block">Temperature (°C)</label>
+                            <input type="number" id="temperature" value="36.8" min="35" max="42" step="0.1"
+                                   class="w-full bg-gray-100 rounded-lg px-4 py-2 text-sm border-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700 mb-1 block">SpO2 (%)</label>
+                            <input type="number" id="spo2" value="98" min="70" max="100"
+                                   class="w-full bg-gray-100 rounded-lg px-4 py-2 text-sm border-none focus:ring-2 focus:ring-primary">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Sources Card -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-database text-primary mr-2"></i>
+                        Data Sources
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <label class="flex items-center">
+                            <input type="checkbox" id="useECG" checked class="rounded text-primary mr-2">
+                            <span class="text-sm text-gray-700">Use ECG Data (Mock)</span>
+                        </label>
+                        
+                        <label class="flex items-center">
+                            <input type="checkbox" id="useCamera" class="rounded text-primary mr-2">
+                            <span class="text-sm text-gray-700">Use Camera (Face)</span>
+                        </label>
+                        
+                        <label class="flex items-center">
+                            <input type="checkbox" id="useMicrophone" class="rounded text-primary mr-2">
+                            <span class="text-sm text-gray-700">Use Microphone</span>
+                        </label>
+                        
+                        <label class="flex items-center">
+                            <input type="checkbox" id="enableLLM" class="rounded text-primary mr-2">
+                            <span class="text-sm text-gray-700">Enable LLM Explanation</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Patient Info Card -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-user text-primary mr-2"></i>
+                        Patient Info
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700 mb-1 block">Patient ID</label>
+                            <input type="text" id="patientId" value="PT-001" 
+                                   class="w-full bg-gray-100 rounded-lg px-4 py-2 text-sm border-none focus:ring-2 focus:ring-primary">
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700 mb-1 block">Session ID</label>
+                            <input type="text" id="sessionId" value="" placeholder="Auto-generated"
+                                   class="w-full bg-gray-100 rounded-lg px-4 py-2 text-sm border-none focus:ring-2 focus:ring-primary">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analyze Button -->
+                <button id="analyzeBtn" 
+                        class="w-full bg-primary text-white py-4 rounded-full font-bold text-lg hover:bg-primary-dark transition-all shadow-lg hover:shadow-xl transform hover:scale-105">
+                    <i class="fas fa-brain mr-2"></i> Analyze Patient
+                </button>
+            </div>
+
+            <!-- Middle Column: Live Monitoring -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Camera Feed -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center justify-between">
+                        <span><i class="fas fa-camera text-primary mr-2"></i> Camera Feed</span>
+                        <button id="startCameraBtn" class="text-xs bg-primary text-white px-3 py-1 rounded-full">
+                            Start
+                        </button>
+                    </h3>
+                    
+                    <div class="relative bg-gray-900 rounded-2xl overflow-hidden" style="height: 300px;">
+                        <video id="cameraVideo" autoplay playsinline class="w-full h-full object-cover hidden"></video>
+                        <div id="cameraPlaceholder" class="flex items-center justify-center h-full">
+                            <div class="text-center text-gray-400">
+                                <i class="fas fa-camera text-5xl mb-2"></i>
+                                <p class="text-sm">Camera not started</p>
+                            </div>
+                        </div>
+                        <canvas id="cameraCanvas" class="hidden"></canvas>
+                    </div>
+                </div>
+
+                <!-- Microphone -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center justify-between">
+                        <span><i class="fas fa-microphone text-primary mr-2"></i> Microphone</span>
+                        <button id="startMicBtn" class="text-xs bg-primary text-white px-3 py-1 rounded-full">
+                            Record
+                        </button>
+                    </h3>
+                    
+                    <div class="bg-gray-900 rounded-2xl p-4 h-32 flex items-center justify-center">
+                        <div id="micStatus" class="text-center text-gray-400">
+                            <i class="fas fa-microphone-slash text-3xl mb-2"></i>
+                            <p class="text-sm">Not recording</p>
+                        </div>
+                        <canvas id="audioVisualizer" class="hidden w-full h-full"></canvas>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Recording duration: <span id="recordingTime">0s</span></p>
+                </div>
+
+                <!-- ECG Preview -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-heartbeat text-primary mr-2"></i> ECG Signal
+                    </h3>
+                    
+                    <div class="bg-gray-900 rounded-2xl p-4 h-32">
+                        <canvas id="ecgCanvas" class="w-full h-full"></canvas>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Simulated ECG waveform (1000 samples)</p>
+                </div>
+            </div>
+
+            <!-- Right Column: Results -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Results Card -->
+                <div id="resultsCard" class="bg-white p-6 rounded-3xl shadow-sm hidden">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-clipboard-check text-primary mr-2"></i> Analysis Results
+                    </h3>
+                    
+                    <!-- Risk Level -->
+                    <div id="riskLevel" class="mb-6 text-center p-6 rounded-2xl">
+                        <div class="text-sm font-semibold text-gray-600 mb-2">Risk Assessment</div>
+                        <div id="riskValue" class="text-4xl font-bold mb-2">-</div>
+                        <div id="riskConfidence" class="text-sm text-gray-600">Confidence: -</div>
+                    </div>
+
+                    <!-- Clinical Summary -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-bold text-gray-700 mb-2">Clinical Summary</h4>
+                        <div id="clinicalSummary" class="text-sm text-gray-600 bg-gray-50 p-4 rounded-xl">
+                            Awaiting analysis...
+                        </div>
+                    </div>
+
+                    <!-- Assessment -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-bold text-gray-700 mb-2">Assessment</h4>
+                        <div id="clinicalAssessment" class="text-sm text-gray-600 bg-gray-50 p-4 rounded-xl">
+                            Awaiting analysis...
+                        </div>
+                    </div>
+
+                    <!-- Contributing Signals -->
+                    <div class="mb-6">
+                        <h4 class="text-sm font-bold text-gray-700 mb-2">Contributing Signals</h4>
+                        <div id="contributingSignals" class="space-y-2">
+                            <p class="text-sm text-gray-500">No signals detected yet</p>
+                        </div>
+                    </div>
+
+                    <!-- LLM Explanation (if enabled) -->
+                    <div id="llmExplanation" class="hidden mb-6">
+                        <h4 class="text-sm font-bold text-gray-700 mb-2 flex items-center">
+                            <i class="fas fa-robot text-primary mr-2"></i> AI Explanation
+                        </h4>
+                        <div id="llmExplanationText" class="text-sm text-gray-600 bg-purple-50 p-4 rounded-xl border border-purple-200">
+                        </div>
+                    </div>
+
+                    <!-- Metadata -->
+                    <div class="text-xs text-gray-400 space-y-1 border-t pt-4">
+                        <div>Session ID: <span id="resultSessionId">-</span></div>
+                        <div>Analyzed at: <span id="resultTimestamp">-</span></div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingCard" class="bg-white p-6 rounded-3xl shadow-sm hidden">
+                    <div class="text-center py-12">
+                        <div class="inline-block animate-spin text-primary text-5xl mb-4">
+                            <i class="fas fa-circle-notch"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Analyzing Patient Data</h3>
+                        <p class="text-sm text-gray-600">Processing multimodal inputs...</p>
+                        <div id="loadingProgress" class="mt-4 text-xs text-gray-500"></div>
+                    </div>
+                </div>
+
+                <!-- Initial State -->
+                <div id="initialCard" class="bg-white p-6 rounded-3xl shadow-sm">
+                    <div class="text-center py-12">
+                        <div class="text-primary text-5xl mb-4">
+                            <i class="fas fa-stethoscope"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Ready for Analysis</h3>
+                        <p class="text-sm text-gray-600">Configure inputs and click "Analyze Patient" to begin</p>
+                    </div>
+                </div>
+
+                <!-- Agent Trace -->
+                <div id="agentTraceCard" class="bg-white p-6 rounded-3xl shadow-sm hidden">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-project-diagram text-primary mr-2"></i> Agent Trace
+                    </h3>
+                    <div id="agentTraceContent" class="space-y-3 max-h-96 overflow-y-auto">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Diagnostics JavaScript -->
+    <script src="diagnostics.js"></script>
+</body>
+</html>

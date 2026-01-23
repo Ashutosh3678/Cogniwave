@@ -1,0 +1,24 @@
+# Minimal CogniWave Backend Requirements
+
+# FastAPI
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+pydantic==2.9.0
+
+# ML/AI
+torch==2.1.0
+numpy==1.26.4
+Pillow==10.0.0
+
+# Database & Auth
+sqlalchemy==2.0.23
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# AI Services & PDF
+groq==0.11.0
+reportlab==4.0.7
+
+# Utilities
+python-multipart==0.0.9
+python-dotenv==1.0.0

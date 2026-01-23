@@ -157,6 +157,22 @@ export const Header = () => {
             <p className="max-w-2xl text-base md:text-xl mt-8 text-slate-600 leading-relaxed font-medium">
                 Turn daily inventory into predictive insights. Reduce expiries, avoid stockouts, and run your pharmacy with surgical precision.
             </p>
+            
+            {/* Get Started Button */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="mt-10"
+            >
+                <a
+                    href="/dashboard/dash.html"
+                    className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-xl text-lg font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-105 group"
+                >
+                    <span>Get Started</span>
+                    <ExternalLink className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </a>
+            </motion.div>
         </div>
     );
 };

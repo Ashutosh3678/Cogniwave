@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CogniWave Dashboard</title>
+<!-- Load Tailwind CSS v3 with required plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Load FontAwesome for Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Custom CSS -->
+<link href="dashboard.css" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script src="tailwind-config.js"></script>
+<!-- Centralized Navigation -->
+<script src="navbar.js"></script>
+</head>
+<body class="bg-bg text-gray-800 font-sans min-h-screen p-6 overflow-x-hidden pt-28">
+<!-- Navigation Container -->
+<div id="navbar-container"></div>
+<!-- BEGIN: Main Grid -->
+<main class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- BEGIN: Column 1 (Left - Hero Section) -->
+<section class="lg:col-span-5 flex flex-col gap-6">
+<!-- Headline -->
+<div>
+<h2 class="font-bold text-gray-900 leading-tight text-5xl">Hello, Sai Charan!</h2>
+<p class="text-gray-500 text-lg mt-1">How are you feeling today?</p>
+</div>
+<!-- Central 3D Illustration Area -->
+<div class="relative flex-grow min-h-[300px] flex items-center justify-center">
+<!-- Video Container with White Background -->
+<div class="relative bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl shadow-lg w-full max-w-[500px] h-[400px] flex items-center justify-center overflow-hidden">
+<!-- Heart Video - Toggle size by changing 'object-cover' to 'object-contain' -->
+<video id="heartVideo" autoplay loop muted playsinline class="w-full h-full object-cover z-10" style="background: transparent; transform: scale(1.2);">
+<source src="heart-video.mp4" type="video/mp4">
+Your browser does not support the video tag.
+</video>
+</div>
+<!-- Overlay Glass Card: Heart Beat -->
+<div class="absolute top-1/2 left-0 -translate-y-1/2 md:-translate-y-0 md:top-auto md:bottom-10 md:left-8 z-20 glass-card p-4 rounded-2xl w-64 shadow-lg animate-pulse">
+<div class="flex justify-between items-start mb-2">
+<span class="text-sm font-semibold text-gray-700">Heart Beat</span>
+<div class="w-6 h-6 bg-white/50 rounded-full flex items-center justify-center">
+<i class="fas fa-heart text-red-500 text-xs heart-beat-icon"></i>
+</div>
+</div>
+<div class="flex items-end justify-between mb-2">
+<div class="h-8 w-full mr-2">
+<!-- Placeholder for waveform -->
+<svg class="w-full h-full text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 200 50"><path d="M0,25 L20,25 L30,10 L40,40 L50,25 L70,25 L80,5 L90,45 L100,25 L120,25 L130,15 L140,35 L150,25 L200,25" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</div>
+</div>
+<div class="text-right">
+<span id="heartRate" class="text-xs font-bold text-gray-800">120 bpm</span>
+</div>
+</div>
+</div>
+<!-- Bottom Row: Research Cards -->
+<div class="grid grid-cols-3 gap-4">
+<!-- Brain Card -->
+<div class="bg-white p-4 rounded-3xl shadow-soft flex flex-col justify-between h-32 relative overflow-hidden group hover:shadow-lg transition-all">
+<div class="z-10">
+<p class="text-xs text-gray-400">Research</p>
+<h4 class="font-bold text-gray-800">Brain</h4>
+</div>
+<div class="absolute right-[-10px] bottom-[-10px] w-20 h-20 opacity-80">
+<img alt="Brain" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDHNbswpWUixyEkdDGvjHD94Lx0fl40w3EGd5DbRIN5tpNkvub-C-19vusc9w22g4g1WIFn9sk5omVlYzdDfgB5sZHBZxjAAPvw6inHmytnVOibbxkH4kh6pFuuDcuoIDS9BOYugOuh_kWjcbxsTkhK-B22G7wr_xM8t3sIhEW1Z2sBj-haMjliJ_JQEGAxgIkwx3VmB-HsjNprse9rYXqRANvAtSTgAMJKxOFI72RvnTTTl19fx5NcoXAo3UlYviFp7Mat8jzUNc"/>
+</div>
+<div class="z-10 mt-auto">
+<span class="text-xs font-semibold text-gray-500">8/13</span>
+</div>
+</div>
+<!-- Heart Card -->
+<div class="bg-gray-200 p-4 rounded-3xl shadow-soft flex flex-col justify-between h-24 relative overflow-hidden group hover:shadow-lg transition-all">
+<div class="z-10">
+<p class="text-xs text-gray-500">Research</p>
+<h4 class="font-bold text-gray-900">Heart</h4>
+</div>
+<div class="absolute right-[-10px] bottom-[-10px] w-20 h-20 opacity-80">
+<img alt="Heart" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCAAxWIv49rEGjJrrtVabB0HPxgmTLnXk1c2FqBEqy1mA3kIJwj8YrNmWBp3iR8vjmKsB6XXGDEl6DyYZcEvwPkhGfkRq5IM9-uQUkZCBNpMQsO4e12-1Ayx9Oyhz0-nMA7MdUzUHuZ1Pxn9xCGQOi8ugxMOPjelcQytn7YCLyezbJbfWiVGqR-01eS-QquLsrYFxx3YMEni4ZGCKVzZTPbT1TAY_GJOu7D1BprZW9yCfvGaZOhckvJPs7kZkO_TEdV3ThNbWfEARg"/>
+</div>
+<div class="z-10 mt-auto">
+<span class="text-xs font-semibold text-gray-600">6/10</span>
+</div>
+</div>
+<!-- Lungs Card -->
+<div class="bg-white p-4 rounded-3xl shadow-soft flex flex-col justify-between h-32 relative overflow-hidden group hover:shadow-lg transition-all">
+<div class="z-10">
+<p class="text-xs text-gray-400">Research</p>
+<h4 class="font-bold text-gray-800">Lungs</h4>
+</div>
+<div class="absolute right-[-10px] bottom-[-10px] w-20 h-20 opacity-80">
+<img alt="Lungs" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBguPW9iMhQCwaFF1frVbaxzbTpFm-rxI5TNk1rOI3LV0YX28QgxAJ0BLtEMSMQ5GlsaxeE8937w9tjilRygj-zyMI_w7hYhDyz56xBJ7xveGSYlS6fP2CGGMfrbI9y-eLgH-QzywzFi05gKPUGV2QqKvnFS7q5zSdPbTnPLyvJJX2sUH26xulrHPqWXZf2Zcs-0CGAuvIxIwKZzOmKNSefJ0CQL6nhcqjl5K3faY0zUUNkwuqGGW6321cAUhARrArfZB9EsdPuBHs"/>
+</div>
+<div class="z-10 mt-auto">
+<span class="text-xs font-semibold text-gray-500">10/12</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Column 1 -->
+<!-- BEGIN: Column 2 (Middle - Health Data) -->
+<section class="lg:col-span-4 flex flex-col gap-8">
+<!-- Cholesterol Card -->
+<div class="bg-white p-6 rounded-3xl shadow-soft h-64 flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-bold text-lg text-gray-900">Cholesterol level</h3>
+<div class="flex items-center bg-gray-100 rounded-full px-3 py-1 text-xs font-medium text-gray-600">
+                        by month <i class="fas fa-chevron-down ml-2 text-blue-900"></i>
+</div>
+</div>
+<div class="flex-grow w-full h-full overflow-hidden rounded-lg">
+<svg class="w-full h-full" viewbox="0 0 400 200"><defs><lineargradient id="cholesterolGradient" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#3B82F6" stop-opacity="0.6"></stop><stop offset="100%" stop-color="#3B82F6" stop-opacity="0"></stop></lineargradient></defs><path d="M0,150 C50,140 100,100 150,110 S250,150 300,100 S350,50 400,80 V200 H0 Z" fill="url(#cholesterolGradient)"></path><path d="M0,150 C50,140 100,100 150,110 S250,150 300,100 S350,50 400,80" fill="none" stroke="#3B82F6" stroke-linecap="round" stroke-width="3"></path></svg>
+</div>
+</div>
+<!-- Medication List Card -->
+<div class="bg-white p-6 rounded-3xl shadow-soft flex-grow">
+<h3 class="font-bold text-lg text-gray-900 mb-4">Medication list</h3>
+<div class="space-y-3">
+<!-- Med Item 1 -->
+<div class="bg-gray-50 p-3 rounded-2xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-blue-500">
+<i class="fas fa-capsules"></i>
+</div>
+<div>
+<h4 class="font-bold text-sm text-gray-800">B12</h4>
+<p class="text-xs text-gray-500">460 mg</p>
+</div>
+</div>
+<div class="text-xs text-gray-400 font-medium">21 Sep - 25 Sep</div>
+</div>
+<!-- Med Item 2 (Active) -->
+<div class="bg-primary p-3 rounded-2xl flex items-center justify-between text-white shadow-lg shadow-primary/20 medication-item" data-time="14">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-dark flex items-center justify-center text-white">
+<i class="fas fa-pills"></i>
+</div>
+<div>
+<h4 class="font-bold text-sm">Verapamil</h4>
+<p class="text-xs text-blue-200">460 mg</p>
+</div>
+</div>
+<div class="text-right">
+<div class="text-xs text-blue-200">21 Sep - Until oct</div>
+<div class="text-[10px] text-blue-300">checc op</div>
+</div>
+</div>
+<!-- Med Item 3 -->
+<div class="bg-gray-50 p-3 rounded-2xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-blue-500">
+<i class="fas fa-tablets"></i>
+</div>
+<div>
+<h4 class="font-bold text-sm text-gray-800">Ibuprofen</h4>
+<p class="text-xs text-gray-500">400 mg</p>
+</div>
+</div>
+<div class="text-xs text-gray-400 font-medium">As needed for pain</div>
+</div>
+<!-- Med Item 4 -->
+<div class="bg-gray-50 p-3 rounded-2xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-blue-500">
+<i class="fas fa-tablets"></i>
+</div>
+<div>
+<h4 class="font-bold text-sm text-gray-800">Aspirin</h4>
+<p class="text-xs text-gray-500">300 mg</p>
+</div>
+</div>
+<div class="text-xs text-gray-400 font-medium">21 Sep - 25 Sep</div>
+</div>
+</div>
+</div>
+<!-- Allergies Card -->
+<div class="bg-white p-5 rounded-3xl shadow-soft">
+<div class="flex items-center gap-3 mb-2">
+<div class="text-primary text-xl">
+<i class="fas fa-virus"></i>
+</div>
+<h3 class="font-bold text-lg text-gray-900">Allergies</h3>
+</div>
+<p class="text-gray-500 text-sm leading-relaxed">
+                    Penicillins, Cephalosporins, Sulfonamides
+                </p>
+</div>
+</section>
+<!-- END: Column 2 -->
+<!-- BEGIN: Column 3 (Right - Schedule & Vitals) -->
+<section class="lg:col-span-3 flex flex-col gap-6">
+<!-- Vitals Card -->
+<div class="bg-white p-6 rounded-3xl shadow-soft h-48 flex flex-col">
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-bold text-lg text-gray-900">Vital Signs</h3>
+<div class="w-6 h-6 rounded-full bg-primary-light text-primary flex items-center justify-center text-xs">
+<i class="fas fa-arrow-up rotate-45"></i>
+</div>
+</div>
+<div class="flex-grow w-full h-full overflow-hidden rounded-lg">
+<svg class="w-full h-full" viewbox="0 0 300 150"><path d="M0,100 C40,90 80,110 120,80 S200,60 300,90" fill="none" stroke="#EF4444" stroke-dasharray="6 4" stroke-width="2"></path><path d="M0,120 C40,110 80,80 120,90 S200,40 300,70" fill="none" stroke="#3B82F6" stroke-width="3"></path><circle cx="120" cy="90" fill="white" r="4" stroke="#3B82F6" stroke-width="2"></circle><circle cx="200" cy="40" fill="white" r="4" stroke="#3B82F6" stroke-width="2"></circle></svg>
+</div>
+</div>
+<!-- Schedule Card -->
+<div class="bg-white p-6 rounded-3xl shadow-soft flex-grow">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-bold text-lg text-gray-900">My Schedule</h3>
+<div class="text-xs text-gray-500 cursor-pointer flex items-center">
+                        Sep <i class="fas fa-chevron-down ml-1"></i>
+</div>
+</div>
+<!-- Date Strip -->
+<div class="flex justify-between mb-6">
+<div class="flex flex-col items-center bg-primary text-white py-2 px-3 shadow-lg shadow-primary/30 rounded-2xl date-selector cursor-pointer">
+<span class="text-xs font-medium opacity-80">Mon</span>
+<span class="text-sm font-bold">20</span>
+</div>
+<div class="flex flex-col items-center py-2 px-3 text-gray-400">
+<span class="text-xs font-medium">Tue</span>
+<span class="text-sm font-bold">21</span>
+</div>
+<div class="flex flex-col items-center py-2 px-3 text-gray-400">
+<span class="text-xs font-medium">Wed</span>
+<span class="text-sm font-bold">22</span>
+</div>
+<div class="flex flex-col items-center py-2 px-3 text-gray-400">
+<span class="text-xs font-medium">Thu</span>
+<span class="text-sm font-bold">23</span>
+</div>
+<div class="flex flex-col items-center py-2 px-3 text-gray-400">
+<span class="text-xs font-medium">Fri</span>
+<span class="text-sm font-bold">24</span>
+</div>
+</div>
+<!-- Appointments List -->
+<div class="space-y-4">
+<!-- Appointment 1 -->
+<div class="bg-gray-50 p-3 rounded-2xl">
+<div class="flex justify-between items-start mb-2">
+<div class="flex gap-3">
+<img alt="Dr Avatar" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEZv521XW_SO39uTp9abMrn7Lq4EuHHVdClpsCHBUV0PgOThfVHsC4Wibs52MEQMcoMSotSkEHT6TZOGLxBvT2zBi-2NMtqw5Woe-Ck-CnPLRDWV18LuChPDEBXVU5DHnTY5dGa18lvJd3egXAA8w2_tONMWiuzZ5oWA3Da9R27SH2bOZupJOqFyn-aOQhL9aD15m-0nk5JJi4_uEG5KjMoS1OOcK2JTp4qqHRUV6dxcGgfvsTod1iiUblcTxbljGFTTQypt3KJYA"/>
+<div>
+<h4 class="font-bold text-sm text-gray-900">Dr. Kalya Donin</h4>
+<p class="text-xs text-gray-500">Physician</p>
+</div>
+</div>
+<button class="text-gray-400 hover:text-gray-600">
+<i class="fas fa-ellipsis-v text-xs"></i>
+</button>
+</div>
+<div class="flex justify-between items-center mt-3">
+<span class="text-[10px] text-gray-400 font-medium">20 September 2024, 12:30 PM</span>
+<span class="bg-blue-200 text-blue-800 text-[10px] font-bold px-2 py-1 rounded-md">Created</span>
+</div>
+</div>
+<!-- Appointment 2 -->
+<div class="bg-gray-50 p-3 rounded-2xl">
+<div class="flex justify-between items-start mb-2">
+<div class="flex gap-3">
+<img alt="Dr Avatar" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3s6QTJXUbgBySFQ5Zq27b4Lhd5flO6xXBiB5ossS3-Uh_jdJKI9qWyNSrX8U_qmck9koAQAAfbYAWpF1mY4sgir_WsXUC1XjH71rd4Kv-Dhmdoer9ibJWa7UZJON6xCeAM4oVgt60a3hC-ORv93jb-ciVjh5SoioU1InE8cn035_ycRbXzEvxp4hjgfh1apPqXsWyul4ea1x5AX6GkYUI9EpbGcEBvRJbkchYKbBh1FGnVXH05yPNoEM8ZMerpkuoy5n8nrVeZUw"/>
+<div>
+<h4 class="font-bold text-sm text-gray-900">Dr. Phillp Kennedy</h4>
+<p class="text-xs text-gray-500">Cardiologist</p>
+</div>
+</div>
+<button class="text-gray-400 hover:text-gray-600">
+<i class="fas fa-ellipsis-v text-xs"></i>
+</button>
+</div>
+<div class="flex justify-between items-center mt-3">
+<span class="text-[10px] text-gray-400 font-medium">20 September 2024, 11:00 AM</span>
+<span class="text-white text-[10px] font-bold px-2 py-1 rounded-md bg-primary">Confirmed</span>
+</div>
+</div>
+<!-- Appointment 3 -->
+<div class="bg-gray-50 p-3 rounded-2xl">
+<div class="flex justify-between items-start mb-2">
+<div class="flex gap-3">
+<img alt="Dr Avatar" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoBC63pq9U-coeuV-rWhrJ3H2B47HeOIyVCxXefd7rc3Q-zaaA7TV_k5WSWEiJk--SAvGKrbSDBlh_GoA8KafIn4lOEyMl5zrLsJvB5bdu0T3O_hbThLPPCgvgM2dc8O8dELmpQpk2PwYe3kTyFynFs0corO9_tWScSgBATiI34SGI-6EtIS-AbOCApCk4r5fgaHU-QJqcJNpQDdYyNa2Bv6eay2ntlhIT6FBeclo4aSAZcozwXD39l4mmdGkWejq6H0zXKUl8pAc"/>
+<div>
+<h4 class="font-bold text-sm text-gray-900">Dr. Emerson Herwitz</h4>
+<p class="text-xs text-gray-500">Endocrinologist</p>
+</div>
+</div>
+<button class="text-gray-400 hover:text-gray-600">
+<i class="fas fa-ellipsis-v text-xs"></i>
+</button>
+</div>
+<div class="flex justify-between items-center mt-3">
+<span class="text-[10px] text-gray-400 font-medium">20 September 2024, 16:00 PM</span>
+<span class="bg-gray-400 text-white text-[10px] font-bold px-2 py-1 rounded-md">Completed</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Column 3 -->
+</main>
+<!-- END: Main Grid -->
+
+<!-- Dashboard JavaScript -->
+<script src="dashboard.js"></script>
+</body></html>

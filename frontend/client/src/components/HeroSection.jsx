@@ -42,12 +42,12 @@ const HeroSection = () => {
                 </p>
               </div>
               {/* CTA Button */}
-              <button className="cta-btn">
+              <a href="/dashboard/dash.html" className="cta-btn" style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
                 Start Cure
                 <svg className="arrow-icon" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" strokeLinecap="round" strokeLinejoin="round"></path>
                 </svg>
-              </button>
+              </a>
               {/* Secondary Link: Watch Review */}
               <div className="watch-review-container">
                 <button className="watch-review-btn">
