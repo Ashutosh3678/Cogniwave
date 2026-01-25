@@ -38,7 +38,7 @@ const HeroSection = () => {
               {/* Card Text */}
               <div className="card-text">
                 <p>
-                  Welcome to mental mind, your gateway to improved mental me. We're here to help you sculpt a stronger, more resilient mind.
+                  Welcome to Cogni:wave, your gateway to improved mental health. We're here to help you sculpt a stronger, more resilient mind.
                 </p>
               </div>
               {/* CTA Button */}

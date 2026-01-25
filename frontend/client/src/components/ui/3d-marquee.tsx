@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 export const ThreeDMarquee = ({
     items,
     className,
@@ -34,7 +34,7 @@ export const ThreeDMarquee = ({
                     >
                         {chunks.map((subarray, colIndex) => (
                             <motion.div
-                                animate={{ y: colIndex % 2 === 0 ? [200, -200] : [-200, 200] }}
+                                animate={{ y: colIndex % 2 === 0 ? [700, -700] : [-700, 700] }}
                                 transition={{
                                     duration: 20,
                                     repeat: Infinity,

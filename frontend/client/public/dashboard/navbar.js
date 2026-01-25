@@ -18,8 +18,8 @@ function generateNavbar() {
         { href: 'dash.html', icon: 'fas fa-th-large', label: 'Dashboard', page: 'dash.html' },
         { href: 'diagnostics.html', icon: 'fas fa-stethoscope', label: 'Diagnostics', page: 'diagnostics.html' },
         { href: 'schedule.html', icon: 'far fa-calendar-alt', label: 'Schedule', page: 'schedule.html' },
-        { href: 'analytics.html', icon: 'fas fa-chart-bar', label: 'Analytics', page: 'analytics.html' },
-        { href: 'history.html', icon: 'fas fa-history', label: 'History', page: 'history.html' }
+        { href: 'chatbot.html', icon: 'fas fa-comments', label: 'AI Assistant', page: 'chatbot.html' },
+        { href: 'history.html', icon: 'fas fa-chart-line', label: 'Analytics', page: 'history.html' }
     ];
 
     const navHTML = `
@@ -55,19 +55,14 @@ function generateNavbar() {
                 </div>
                 
                 <!-- Avatar -->
-                <div class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-sm">
-                    <img alt="Sai Charan" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNZNJHfoaKlMlkmRy-Ob6IjFdmpZ4xwARNmJMRKgVsrtykjCJYsreJNTnoFSH7i3O9tPTLtRsQzBg2A-SVTPzZgVE-8QBh3_-_JljD_LiLmQAKBnI-QKdYIwTIv9SSdgfJNJogwDFyBDyqe299MPBWJTeyu4E5sWSuxcJ_CTpW9iP3niA4ILiy5TT44JYWFVLXrGoEdMVioSn1XOqtZW3WeBnBFWvcz5eUT3ZHlZSvQpSdL7I7jwM4wzS3GLgiATDCKcxqjZpreDg"/>
-                </div>
-                
-                <!-- Search Button -->
-                <button id="searchBtn" class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-500 hover:text-primary transition-colors">
-                    <i class="fas fa-search"></i>
+                <button id="profileBtn" class="w-10 h-10 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-sm hover:border-primary transition-all cursor-pointer">
+                    <img alt="Sai Charan" class="w-full h-full object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop"/>
                 </button>
                 
                 <!-- Notification Button -->
-                <button class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-500 hover:text-primary transition-colors relative">
+                <button id="notificationBtn" class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-500 hover:text-primary transition-colors relative">
                     <i class="far fa-bell"></i>
-                    <span class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+                    <span id="notificationBadge" class="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
                 </button>
             </div>
         </header>

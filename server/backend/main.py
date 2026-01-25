@@ -13,6 +13,10 @@ from datetime import datetime
 import traceback
 import json
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Import modules
 from simple_agents import ECGAgent, EmotionAgent
@@ -20,6 +24,7 @@ from database import init_db, get_db, Doctor, Patient, AnalysisReport, REPORTS_D
 from auth import get_password_hash, authenticate_doctor, create_access_token, get_current_doctor
 from groq_service import generate_medical_report
 from pdf_generator import generate_pdf_report
+# Chatbot will use Gemini API directly
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -128,9 +133,24 @@ async def analyze(req: AnalysisRequest, db: Session = Depends(get_db)):
             logger.info("  ECG Agent analyzing...")
             results["agent_results"]["ecg_agent"] = await ecg_agent.analyze(req.physiological_data)
         
+        # Debug: Log behavioral data status
         if req.behavioral_data:
+            logger.info(f"  Behavioral data received:")
+            logger.info(f"    - image_data: {bool(req.behavioral_data.image_data)} (length: {len(req.behavioral_data.image_data) if req.behavioral_data.image_data else 0})")
+            logger.info(f"    - audio_data: {bool(req.behavioral_data.audio_data)} (length: {len(req.behavioral_data.audio_data) if req.behavioral_data.audio_data else 0})")
+            logger.info(f"    - text_data: {bool(req.behavioral_data.text_data)}")
+        else:
+            logger.info("  No behavioral_data in request")
+        
+        # Only run emotion agent if there's actual image or audio data
+        if req.behavioral_data and (req.behavioral_data.image_data or req.behavioral_data.audio_data or req.behavioral_data.text_data):
             logger.info("  Emotion Agent analyzing...")
+            logger.info(f"    - Image data: {bool(req.behavioral_data.image_data)}")
+            logger.info(f"    - Audio data: {bool(req.behavioral_data.audio_data)}")
+            logger.info(f"    - Text data: {bool(req.behavioral_data.text_data)}")
             results["agent_results"]["emotion_agent"] = await emotion_agent.analyze(req.behavioral_data)
+        else:
+            logger.info("  Emotion Agent SKIPPED - no image/audio/text data provided")
         
         # Summary
         results["summary"] = generate_summary(results["agent_results"])
@@ -200,6 +220,33 @@ async def analyze(req: AnalysisRequest, db: Session = Depends(get_db)):
         raise HTTPException(500, f"Analysis failed: {e}")
 
 # ===== Patient History =====
+@app.get("/api/v1/reports/all", tags=["Reports"])
+async def get_all_reports(db: Session = Depends(get_db)):
+    reports = db.query(AnalysisReport).order_by(AnalysisReport.created_at.desc()).all()
+    return {
+        "total_reports": len(reports),
+        "reports": [{
+            "id": r.id,
+            "analysis_id": r.analysis_id,
+            "patient": {
+                "patient_id": r.patient.patient_id,
+                "full_name": r.patient.full_name,
+                "age": r.patient.age,
+                "gender": r.patient.gender
+            },
+            "vital_signs": {
+                "heart_rate": r.heart_rate,
+                "blood_pressure": f"{r.bp_systolic}/{r.bp_diastolic}" if r.bp_systolic and r.bp_diastolic else None,
+                "temperature": r.temperature,
+                "oxygen_saturation": r.oxygen_saturation
+            },
+            "priority_level": r.priority_level,
+            "requires_attention": r.requires_attention,
+            "created_at": r.created_at.isoformat(),
+            "pdf_url": f"/api/v1/reports/download/{r.pdf_filename}" if r.pdf_filename else None
+        } for r in reports]
+    }
+
 @app.get("/api/v1/patients/{patient_id}/history", tags=["Patients"])
 async def history(patient_id: str, doctor: Doctor = Depends(get_current_doctor), db: Session = Depends(get_db)):
     patient = db.query(Patient).filter(Patient.patient_id == patient_id).first()
@@ -238,6 +285,101 @@ async def download_pdf(filename: str):
     if not os.path.exists(pdf_path):
         raise HTTPException(404, "PDF not found")
     return FileResponse(pdf_path, media_type="application/pdf", filename=filename)
+
+# ===== Chatbot Endpoint =====
+try:
+    import google.generativeai as genai
+    GEMINI_AVAILABLE = True
+    gemini_api_key = os.getenv('GEMINI_API_KEY')
+    if gemini_api_key:
+        genai.configure(api_key=gemini_api_key)
+        logger.info("Gemini chatbot initialized successfully")
+        GEMINI_CONFIGURED = True
+    else:
+        GEMINI_CONFIGURED = False
+        logger.warning("GEMINI_API_KEY not found in environment variables")
+except Exception as e:
+    GEMINI_AVAILABLE = False
+    GEMINI_CONFIGURED = False
+    logger.error(f"Failed to initialize Gemini: {e}")
+
+
+COGNIWAVE_CONTEXT = """
+You are CogniWave AI Assistant, an intelligent healthcare chatbot for the CogniWave medical diagnostics platform.
+
+CogniWave is a comprehensive medical diagnostics system that includes:
+- ECG Analysis: Real-time ECG signal monitoring and heart rate detection
+- Emotion Analysis: Facial emotion detection using camera input and stress detection from audio
+- Medical Report Generation: AI-powered medical reports using GROQ API
+- PDF Reports: Automatic generation of patient medical reports
+- Patient Management: Database tracking of patients and their analysis history
+- Appointment Scheduling: Calendar-based appointment management system
+- Analytics Dashboard: Visual charts and statistics for patient health metrics
+- History Tracking: Complete medical analysis history with downloadable reports
+
+Key Features:
+1. Diagnostics Page: Capture ECG signals, facial images, and audio for comprehensive health analysis
+2. Schedule Page: Manage patient appointments with calendar view
+3. Analytics: View trends in heart rate, emotion patterns, and health metrics
+4. History: Access past medical analyses and download PDF reports
+
+Your role:
+- Answer questions about CogniWave features and functionality
+- Guide users on how to use different features
+- Explain medical diagnostics results in simple terms
+- Help with navigation and troubleshooting
+- Provide health-related information within the CogniWave context
+
+Important: Only answer questions related to CogniWave platform, medical diagnostics, healthcare, and related topics. 
+Politely decline questions outside this scope by redirecting users to CogniWave features.
+"""
+
+class ChatRequest(BaseModel):
+    message: str
+    conversation_history: Optional[List[Dict[str, str]]] = None
+
+@app.post("/api/v1/chatbot/message", tags=["Chatbot"])
+async def chatbot_message(req: ChatRequest):
+    try:
+        if not GEMINI_CONFIGURED:
+            return {
+                "success": False,
+                "error": "Chatbot service unavailable. Gemini API not configured."
+            }
+        
+        logger.info(f"→ Chatbot request: {req.message[:50]}...")
+        
+        # Build conversation context
+        conversation = COGNIWAVE_CONTEXT + "\n\nConversation:\n"
+        
+        # Add conversation history
+        if req.conversation_history:
+            for msg in req.conversation_history[-5:]:  # Last 5 messages for context
+                role = msg.get('role', 'user')
+                content = msg.get('content', '')
+                conversation += f"{role.capitalize()}: {content}\n"
+        
+        # Add current user message
+        conversation += f"User: {req.message}\nAssistant:"
+        
+        # Generate response using Gemini
+        model = genai.GenerativeModel('gemini-2.5-flash-lite')
+        response = model.generate_content(conversation)
+        
+        ai_response = response.text
+        logger.info(f"✓ Chatbot response generated")
+        
+        return {
+            "success": True,
+            "response": ai_response
+        }
+            
+    except Exception as e:
+        logger.error(f"✗ Chatbot error: {e}")
+        return {
+            "success": False,
+            "error": f"Failed to generate response: {str(e)}"
+        }
 
 # ===== Health =====
 @app.get("/api/v1/health/", tags=["System"])

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - CogniWave</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="dashboard.css" rel="stylesheet"/>
+    <script src="tailwind-config.js"></script>
+    <!-- Centralized Navigation -->
+    <script src="navbar.js"></script>
+    <style>
+        .chat-container {
+            height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+        }
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .message {
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px;
+        }
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3b82f6;
+            animation: bounce 1.4s infinite;
+        }
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes bounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+    </style>
+</head>
+<body class="bg-bg text-gray-800 font-sans min-h-screen p-6 pt-28">
+    <!-- Navigation Container -->
+    <div id="navbar-container"></div>
+
+    <main class="max-w-6xl mx-auto">
+        <div class="mb-6">
+            <h2 class="text-4xl font-bold text-gray-900 mb-2">CogniWave AI Assistant</h2>
+            <p class="text-gray-500 text-lg">Ask me anything about CogniWave features and medical diagnostics</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Chat Section -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-3xl shadow-sm p-6 chat-container">
+                    <!-- Messages -->
+                    <div id="messagesContainer" class="messages-container mb-4 pr-2">
+                        <!-- Welcome Message -->
+                        <div class="message mb-4">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white flex-shrink-0">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="ml-3 max-w-xl">
+                                    <div class="bg-blue-50 rounded-2xl rounded-tl-none p-4">
+                                        <p class="text-gray-800"><strong>Hello! I'm your CogniWave AI Assistant.</strong> 👋</p>
+                                        <p class="text-gray-700 mt-2">I can help you with:</p>
+                                        <ul class="text-gray-700 mt-2 space-y-1 text-sm">
+                                            <li>• Understanding CogniWave features</li>
+                                            <li>• Navigating the diagnostics system</li>
+                                            <li>• Explaining medical analysis results</li>
+                                            <li>• Troubleshooting and support</li>
+                                        </ul>
+                                        <p class="text-gray-700 mt-2 text-sm">What would you like to know?</p>
+                                    </div>
+                                    <span class="text-xs text-gray-400 mt-1 inline-block">Just now</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="border-t border-gray-100 pt-4">
+                        <div class="flex gap-2">
+                            <input 
+                                type="text" 
+                                id="messageInput"
+                                placeholder="Ask me anything about CogniWave..."
+                                class="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                            />
+                            <button 
+                                id="sendBtn"
+                                class="px-6 py-3 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors font-medium flex items-center gap-2"
+                            >
+                                <i class="fas fa-paper-plane"></i>
+                                Send
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-2">Press Enter to send</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Sidebar -->
+            <div class="space-y-6">
+                <!-- Quick Actions -->
+                <div class="bg-gradient-to-br from-blue-500 to-purple-600 p-6 rounded-3xl text-white">
+                    <h3 class="text-lg font-bold mb-4 flex items-center">
+                        <i class="fas fa-lightbulb mr-2"></i>
+                        Quick Questions
+                    </h3>
+                    <div class="space-y-2">
+                        <button class="quick-question w-full text-left bg-white/20 hover:bg-white/30 transition-colors p-3 rounded-xl text-sm">
+                            How do I run diagnostics?
+                        </button>
+                        <button class="quick-question w-full text-left bg-white/20 hover:bg-white/30 transition-colors p-3 rounded-xl text-sm">
+                            What is ECG analysis?
+                        </button>
+                        <button class="quick-question w-full text-left bg-white/20 hover:bg-white/30 transition-colors p-3 rounded-xl text-sm">
+                            How to view my history?
+                        </button>
+                        <button class="quick-question w-full text-left bg-white/20 hover:bg-white/30 transition-colors p-3 rounded-xl text-sm">
+                            Schedule an appointment
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Features -->
+                <div class="bg-white p-6 rounded-3xl shadow-sm">
+                    <h3 class="text-lg font-bold mb-4 text-gray-900">
+                        <i class="fas fa-info-circle text-primary mr-2"></i>
+                        Assistant Features
+                    </h3>
+                    <div class="space-y-3 text-sm text-gray-700">
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-0.5"></i>
+                            <span>Context-aware responses about CogniWave</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-0.5"></i>
+                            <span>Healthcare and medical information</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-0.5"></i>
+                            <span>Feature guidance and tutorials</span>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-check-circle text-green-500 mr-2 mt-0.5"></i>
+                            <span>Real-time AI-powered assistance</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8000';
+        const messagesContainer = document.getElementById('messagesContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const messageCountEl = document.getElementById('messageCount');
+        
+        let conversationHistory = [];
+        let messageCount = 0;
+
+        // Quick questions
+        document.querySelectorAll('.quick-question').forEach(btn => {
+            btn.addEventListener('click', () => {
+                messageInput.value = btn.textContent.trim();
+                sendMessage();
+            });
+        });
+
+        // Send message handlers
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            // Add user message to UI
+            addMessage(message, 'user');
+            messageInput.value = '';
+            
+            // Show typing indicator
+            const typingId = showTypingIndicator();
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/v1/chatbot/message`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        conversation_history: conversationHistory
+                    })
+                });
+
+                const result = await response.json();
+                
+                // Remove typing indicator
+                removeTypingIndicator(typingId);
+
+                if (result.success) {
+                    // Add AI response to UI
+                    addMessage(result.response, 'assistant');
+                    
+                    // Update conversation history
+                    conversationHistory.push({ role: 'user', content: message });
+                    conversationHistory.push({ role: 'assistant', content: result.response });
+                } else {
+                    addMessage(`Sorry, I encountered an error: ${result.error}`, 'assistant', true);
+                }
+            } catch (error) {
+                removeTypingIndicator(typingId);
+                console.error('Chat error:', error);
+                addMessage('Sorry, I\'m having trouble connecting. Please make sure the backend is running.', 'assistant', true);
+            }
+        }
+
+        function addMessage(text, role, isError = false) {
+            messageCount++;
+            messageCountEl.textContent = messageCount;
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message mb-4';
+            
+            const isUser = role === 'user';
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            if (isUser) {
+                messageDiv.innerHTML = `
+                    <div class="flex items-start justify-end">
+                        <div class="mr-3 max-w-xl">
+                            <div class="bg-primary text-white rounded-2xl rounded-tr-none p-4">
+                                <p>${escapeHtml(text)}</p>
+                            </div>
+                            <span class="text-xs text-gray-400 mt-1 inline-block text-right w-full">${time}</span>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-user text-gray-600"></i>
+                        </div>
+                    </div>
+                `;
+            } else {
+                const bgColor = isError ? 'bg-red-50' : 'bg-blue-50';
+                const icon = isError ? 'fa-exclamation-circle' : 'fa-robot';
+                messageDiv.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white flex-shrink-0">
+                            <i class="fas ${icon}"></i>
+                        </div>
+                        <div class="ml-3 max-w-xl">
+                            <div class="${bgColor} rounded-2xl rounded-tl-none p-4">
+                                <p class="text-gray-800">${formatMessage(text)}</p>
+                            </div>
+                            <span class="text-xs text-gray-400 mt-1 inline-block">${time}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const id = 'typing-' + Date.now();
+            const typingDiv = document.createElement('div');
+            typingDiv.id = id;
+            typingDiv.className = 'message mb-4';
+            typingDiv.innerHTML = `
+                <div class="flex items-start">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white flex-shrink-0">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="ml-3">
+                        <div class="bg-blue-50 rounded-2xl rounded-tl-none p-4">
+                            <div class="typing-indicator">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return id;
+        }
+
+        function removeTypingIndicator(id) {
+            const typingDiv = document.getElementById(id);
+            if (typingDiv) {
+                typingDiv.remove();
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatMessage(text) {
+            // Convert markdown-style formatting to HTML
+            text = escapeHtml(text);
+            
+            // Bold text
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Bullet points
+            text = text.replace(/^- (.*?)$/gm, '• $1');
+            
+            // Line breaks
+            text = text.replace(/\n/g, '<br>');
+            
+            return text;
+        }
+    </script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

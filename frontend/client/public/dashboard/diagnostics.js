@@ -36,6 +36,9 @@ function setupEventListeners() {
     analyzeBtn.addEventListener('click', handleAnalyze);
     startCameraBtn.addEventListener('click', toggleCamera);
     startMicBtn.addEventListener('click', toggleMicrophone);
+    
+    // Update ECG preview when checkbox changes
+    document.getElementById('useECG').addEventListener('change', drawECGPreview);
 }
 
 // Check backend health
@@ -77,27 +80,49 @@ function generateMockECG(duration = 10, sampleRate = 100) {
 function drawECGPreview() {
     const canvas = document.getElementById('ecgCanvas');
     const ctx = canvas.getContext('2d');
-    const ecgData = generateMockECG(5, 50); // 5 seconds, 50Hz for preview
+    const useECG = document.getElementById('useECG').checked;
     
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
     
-    ctx.strokeStyle = '#7A5AF8';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    ecgData.forEach((value, index) => {
-        const x = (index / ecgData.length) * canvas.width;
-        const y = canvas.height / 2 - (value * canvas.height / 2);
+    if (!useECG) {
+        // Draw straight line when ECG is not enabled
+        ctx.strokeStyle = '#7A5AF8';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, canvas.height / 2);
+        ctx.lineTo(canvas.width, canvas.height / 2);
+        ctx.stroke();
         
-        if (index === 0) {
-            ctx.moveTo(x, y);
-        } else {
-            ctx.lineTo(x, y);
-        }
-    });
-    
-    ctx.stroke();
+        // Add "Not Detected" text
+        ctx.fillStyle = '#9CA3AF';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Not Detected', canvas.width / 2, canvas.height / 2 + 30);
+    } else {
+        // Draw normal ECG waveform
+        const ecgData = generateMockECG(5, 50); // 5 seconds, 50Hz for preview
+        
+        ctx.strokeStyle = '#7A5AF8';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        
+        ecgData.forEach((value, index) => {
+            const x = (index / ecgData.length) * canvas.width;
+            const y = canvas.height / 2 - (value * canvas.height / 2);
+            
+            if (index === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        });
+        
+        ctx.stroke();
+    }
 }
 
 // Toggle camera
@@ -133,16 +158,25 @@ async function toggleCamera() {
 
 // Capture frame from camera
 function captureFrame() {
-    if (!cameraStream) return null;
+    console.log('captureFrame called - cameraStream:', !!cameraStream);
+    if (!cameraStream) {
+        console.warn('Cannot capture frame: cameraStream is null');
+        return null;
+    }
     
     const canvas = cameraCanvas;
     canvas.width = cameraVideo.videoWidth || 640;
     canvas.height = cameraVideo.videoHeight || 480;
     
+    console.log('Canvas dimensions:', canvas.width, canvas.height);
+    console.log('Video dimensions:', cameraVideo.videoWidth, cameraVideo.videoHeight);
+    
     const ctx = canvas.getContext('2d');
     ctx.drawImage(cameraVideo, 0, 0, canvas.width, canvas.height);
     
-    return canvas.toDataURL('image/jpeg', 0.8);
+    const imageData = canvas.toDataURL('image/jpeg', 0.8);
+    console.log('Image captured, data length:', imageData.length);
+    return imageData;
 }
 
 // Toggle microphone
@@ -229,14 +263,20 @@ async function handleAnalyze() {
     document.getElementById('resultsCard').classList.add('hidden');
     document.getElementById('loadingCard').classList.remove('hidden');
     
+    // Track whether camera/mic were actually used
+    let cameraUsed = false;
+    let micUsed = false;
+    
     try {
         // Gather input data - matching backend schema
         const patientId = document.getElementById('patientId').value || 'PT-001';
+        const patientName = document.getElementById('patientName').value || null;
         const sessionId = document.getElementById('sessionId').value || `SESSION-${Date.now()}`;
         
         const requestData = {
             patient_metadata: {
                 patient_id: patientId,
+                full_name: patientName,
                 age: 65,
                 gender: "unknown"
             },
@@ -259,22 +299,73 @@ async function handleAnalyze() {
             requestData.physiological_data.ecg_data = generateMockECG();
         }
         
-        // Add camera image if enabled
-        if (document.getElementById('useCamera').checked && cameraStream) {
-            document.getElementById('loadingProgress').textContent = 'Capturing camera frame...';
-            const imageBase64 = captureFrame();
-            if (imageBase64) {
-                requestData.behavioral_data.image_data = imageBase64;
+        // Add camera image if enabled and capture it BEFORE stopping
+        const useCameraChecked = document.getElementById('useCamera').checked;
+        console.log('useCamera checked:', useCameraChecked);
+        console.log('cameraStream exists:', !!cameraStream);
+        
+        if (useCameraChecked) {
+            if (!cameraStream) {
+                showNotification('Camera is not started! Please click the Start button under Camera.', 'error');
+                console.error('Camera checkbox is checked but camera stream is not active');
+            } else {
+                document.getElementById('loadingProgress').textContent = 'Capturing camera frame...';
+                const imageBase64 = captureFrame();
+                console.log('Image captured:', imageBase64 ? 'YES' : 'NO');
+                if (imageBase64) {
+                    requestData.behavioral_data.image_data = imageBase64;
+                    cameraUsed = true;
+                    console.log('Image added to request, length:', imageBase64.length);
+                } else {
+                    console.error('Failed to capture image from camera');
+                }
             }
         }
         
-        // Add audio if enabled
-        if (document.getElementById('useMicrophone').checked && audioChunks.length > 0) {
-            document.getElementById('loadingProgress').textContent = 'Processing audio...';
-            const audioBase64 = await getAudioBase64();
-            if (audioBase64) {
-                requestData.behavioral_data.audio_data = audioBase64;
+        // Add audio if enabled and available BEFORE stopping
+        const useMicChecked = document.getElementById('useMicrophone').checked;
+        console.log('useMicrophone checked:', useMicChecked);
+        console.log('audioChunks length:', audioChunks.length);
+        
+        if (useMicChecked) {
+            if (audioChunks.length === 0) {
+                showNotification('Microphone has no recording! Please record audio first.', 'error');
+                console.error('Microphone checkbox is checked but no audio recorded');
+            } else {
+                document.getElementById('loadingProgress').textContent = 'Processing audio...';
+                const audioBase64 = await getAudioBase64();
+                console.log('Audio captured:', audioBase64 ? 'YES' : 'NO');
+                if (audioBase64) {
+                    requestData.behavioral_data.audio_data = audioBase64;
+                    micUsed = true;
+                    console.log('Audio added to request, length:', audioBase64.length);
+                } else {
+                    console.error('Failed to get audio data');
+                }
             }
+        }
+        
+        // Stop camera and microphone automatically after capturing data
+        if (cameraStream) {
+            cameraStream.getTracks().forEach(track => track.stop());
+            cameraStream = null;
+            cameraVideo.classList.add('hidden');
+            cameraPlaceholder.classList.remove('hidden');
+            startCameraBtn.textContent = 'Start';
+            startCameraBtn.classList.remove('bg-red-500');
+            startCameraBtn.classList.add('bg-primary');
+        }
+        
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+            clearInterval(recordingInterval);
+            startMicBtn.textContent = 'Record';
+            startMicBtn.classList.remove('bg-red-500');
+            startMicBtn.classList.add('bg-primary');
+            micStatus.innerHTML = `
+                <i class="fas fa-microphone-slash text-3xl mb-2 text-gray-400"></i>
+                <p class="text-sm text-gray-400">Not recording</p>
+            `;
         }
         
         // Add text data if microphone was used
@@ -314,8 +405,8 @@ async function handleAnalyze() {
             console.log('PDF available at:', result.pdf_url);
         }
         
-        // Display results
-        displayResults(result, sessionId);
+        // Display results (pass flags for what was used)
+        displayResults(result, sessionId, cameraUsed, micUsed);
         
         showNotification('Analysis complete!', 'success');
         
@@ -332,14 +423,37 @@ async function handleAnalyze() {
 }
 
 // Display analysis results
-function displayResults(result, sessionId) {
+function displayResults(result, sessionId, cameraUsed = false, micUsed = false) {
     // Hide loading, show results
     document.getElementById('loadingCard').classList.add('hidden');
     document.getElementById('resultsCard').classList.remove('hidden');
     
     // Extract summary data from backend response
     const summary = result.summary || {};
-    const agentResults = result.agent_results || {};
+    let agentResults = result.agent_results || {};
+    
+    // Filter out facial/audio agents if not used
+    if (!cameraUsed) {
+        // Remove any facial/emotion/image analysis agents
+        agentResults = Object.fromEntries(
+            Object.entries(agentResults).filter(([key]) => 
+                !key.toLowerCase().includes('facial') && 
+                !key.toLowerCase().includes('emotion') &&
+                !key.toLowerCase().includes('image')
+            )
+        );
+    }
+    
+    if (!micUsed) {
+        // Remove any audio/voice analysis agents
+        agentResults = Object.fromEntries(
+            Object.entries(agentResults).filter(([key]) => 
+                !key.toLowerCase().includes('audio') && 
+                !key.toLowerCase().includes('voice') &&
+                !key.toLowerCase().includes('speech')
+            )
+        );
+    }
     
     // Risk level with color coding (map from backend priority_level)
     const priorityLevel = summary.priority_level || 'ROUTINE';
