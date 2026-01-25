@@ -1,8 +1,4 @@
 # Model files (too large for GitHub)
-server/backend/model_files/
-server/Phycological_model/
-*.pt
-*.pth
 
 # Python
 __pycache__/
